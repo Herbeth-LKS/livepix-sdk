@@ -69,6 +69,65 @@ describe('LivePix SDK - API Real', () => {
     expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
+  test('Should get wallet balance successfully', async () => {
+    const balance = await pix.getWalletBalance();
+
+    expect(Array.isArray(balance)).toBe(true);
+    expect(balance.length).toBeGreaterThan(0);
+
+    expect(balance[0]).toHaveProperty('currency');
+    expect(balance[0]).toHaveProperty('balance');
+    expect(balance[0]).toHaveProperty('balanceHeld');
+    expect(balance[0]).toHaveProperty('balancePending');
+
+    expect(typeof balance[0].currency).toBe('string');
+    expect(typeof balance[0].balance).toBe('number');
+    expect(typeof balance[0].balanceHeld).toBe('number');
+    expect(typeof balance[0].balancePending).toBe('number');
+
+    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('Should get wallet transactions successfully', async () => {
+    const walletTransactions = await pix.getWalletTransactions('BRL');
+
+    expect(Array.isArray(walletTransactions)).toBe(true);
+    expect(walletTransactions.length).toBeGreaterThan(0);
+
+    expect(walletTransactions[0]).toHaveProperty('proof');
+    expect(walletTransactions[0]).toHaveProperty('amount');
+    expect(walletTransactions[0]).toHaveProperty('balance');
+    expect(walletTransactions[0]).toHaveProperty('timestamp');
+
+    expect(typeof walletTransactions[0].proof).toBe('string');
+    expect(typeof walletTransactions[0].amount).toBe('number');
+    expect(typeof walletTransactions[0].balance).toBe('number');
+    expect(typeof walletTransactions[0].timestamp).toBe('number');
+
+    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('Should get wallet receivables successfully', async () => {
+    const receivables = await pix.getWalletReceivables('BRL');
+
+    expect(Array.isArray(receivables)).toBe(true);
+    expect(receivables.length).toBeGreaterThan(0);
+
+    expect(receivables[0]).toHaveProperty('proof');
+    expect(receivables[0]).toHaveProperty('amount');
+    expect(receivables[0]).toHaveProperty('balance');
+    expect(receivables[0]).toHaveProperty('releaseAt');
+    expect(receivables[0]).toHaveProperty('timestamp');
+
+    expect(typeof receivables[0].proof).toBe('string');
+    expect(typeof receivables[0].amount).toBe('number');
+    expect(typeof receivables[0].balance).toBe('number');
+    expect(typeof receivables[0].releaseAt).toBe('number');
+    expect(typeof receivables[0].timestamp).toBe('number');
+
+    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
+  });
+
   test('Should create a Pix payment successfully', async () => {
     const cobranca = await pix.createPayment(
       100,
@@ -105,12 +164,12 @@ describe('LivePix SDK - API Real', () => {
     expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
-  /*test('Should refresh the token when expired', async () => {
-    const newToken = await pix['getAccessToken'](true);
+  // test('Should refresh the token when expired', async () => {
+  //  const newToken = await pix['getAccessToken'](true);
 
-    expect(accessToken).not.toEqual(newToken);
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
-  });*/
+  // expect(accessToken).not.toEqual(newToken);
+  // expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
+  //});
 
   test('Should register a webhook successfully', async () => {
     const webhookData = await pix.createWebhook('https://example.com/webhook');

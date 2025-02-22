@@ -121,13 +121,64 @@ class LivePix {
   //rewards
 
   //currencies
-
   async currencies() {
     return this.requestWithAuth(async (token) => {
       const response = await axios.get(`${this.baseUrl}/v2/currencies`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log('courrencies: ', response.data.data);
+      return response.data.data;
+    });
+  }
+
+  //wallet
+  async getWalletBalance() {
+    return this.requestWithAuth(async (token) => {
+      const response = await axios.get(`${this.baseUrl}/v2/wallet`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data.data;
+    });
+  }
+
+  async getWalletTransactions(currency: string, page?: number, limit?: number) {
+    const params: any = {};
+
+    if (page) {
+      params.page = page;
+    }
+    if (limit) {
+      params.limit = limit;
+    }
+    return this.requestWithAuth(async (token) => {
+      const response = await axios.get(
+        `${this.baseUrl}/v2/wallet/${currency}/transactions`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: params
+        }
+      );
+      return response.data.data;
+    });
+  }
+
+  async getWalletReceivables(currency: string, page?: number, limit?: number) {
+    const params: any = {};
+
+    if (page) {
+      params.page = page;
+    }
+    if (limit) {
+      params.limit = limit;
+    }
+    return this.requestWithAuth(async (token) => {
+      const response = await axios.get(
+        `${this.baseUrl}/v2/wallet/${currency}/receivables`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: params
+        }
+      );
       return response.data.data;
     });
   }

@@ -7,26 +7,28 @@ dotenv.config();
 describe('LivePix SDK - API Real', () => {
   let pix: LivePix;
   let getAccessTokenSpy: jest.SpyInstance;
+  let accessToken: string | null = null;
 
-  beforeEach(() => {
+  beforeAll(async () => {
     pix = new LivePix(
       process.env.LIVEPIX_CLIENT_ID!,
       process.env.LIVEPIX_CLIENT_SECRET!,
       'payments:read payments:write'
     );
     getAccessTokenSpy = jest.spyOn(pix as any, 'getAccessToken');
+
+    accessToken = await pix['getAccessToken']();
   });
 
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
   test('Should obtain an OAuth2 token successfully', async () => {
-    const token = await pix['getAccessToken']();
-    expect(typeof token).toBe('string');
-    expect(token?.length).toBeGreaterThan(10);
+    expect(typeof accessToken).toBe('string');
+    expect(accessToken?.length).toBeGreaterThan(10);
 
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
+    expect(getAccessTokenSpy).toHaveBeenCalledTimes(0);
   });
 
   test('Should create a Pix payment successfully', async () => {
@@ -41,6 +43,7 @@ describe('LivePix SDK - API Real', () => {
     expect(typeof cobranca.redirectUrl).toBe('string');
     expect(typeof cobranca.reference).toBe('string');
 
+    // O token já foi obtido antes, então essa chamada não deve ser contada
     expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -66,10 +69,9 @@ describe('LivePix SDK - API Real', () => {
   });
 
   test('Should refresh the token when expired', async () => {
-    const token1 = await pix['getAccessToken']();
-    const token2 = await pix['getAccessToken'](true);
+    const newToken = await pix['getAccessToken'](true);
 
-    expect(token1).not.toEqual(token2);
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(2);
+    expect(accessToken).not.toEqual(newToken);
+    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 });

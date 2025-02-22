@@ -46,9 +46,6 @@ class LivePix {
       this.accessToken = response.data.access_token;
       this.tokenExpiresAt = now + response.data.expires_in;
 
-      console.log('Novo token obtido:', this.accessToken);
-      console.log('Expiração do token em:', this.tokenExpiresAt);
-
       if (!this.accessToken) {
         throw new Error('Received empty access token');
       }

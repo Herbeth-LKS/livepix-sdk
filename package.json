@@ -8,10 +8,21 @@
     "prepare": "npm run build",
     "test": "jest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "livepix",
+    "sdk",
+    "npm"
+  ],
+  "author": "k0noe",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Herbeth-LKS/livepix-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Herbeth-LKS/livepix-sdk/issues"
+  },
+  "homepage": "https://github.com/Herbeth-LKS/livepix-sdk#readme",
   "dependencies": {
     "axios": "^1.7.9",
     "dotenv": "^16.4.7"

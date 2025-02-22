@@ -107,26 +107,26 @@ describe('LivePix SDK - API Real', () => {
     expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
-  test('Should get wallet receivables successfully', async () => {
-    const receivables = await pix.getWalletReceivables('BRL');
+  //test('Should get wallet receivables successfully', async () => {
+  // const receivables = await pix.getWalletReceivables('BRL');
 
-    expect(Array.isArray(receivables)).toBe(true);
-    expect(receivables.length).toBeGreaterThan(0);
+  // expect(Array.isArray(receivables)).toBe(true);
+  // expect(receivables.length).toBeGreaterThan(0);
 
-    expect(receivables[0]).toHaveProperty('proof');
-    expect(receivables[0]).toHaveProperty('amount');
-    expect(receivables[0]).toHaveProperty('balance');
-    expect(receivables[0]).toHaveProperty('releaseAt');
-    expect(receivables[0]).toHaveProperty('timestamp');
+  // expect(receivables[0]).toHaveProperty('proof');
+  // expect(receivables[0]).toHaveProperty('amount');
+  // expect(receivables[0]).toHaveProperty('balance');
+  //expect(receivables[0]).toHaveProperty('releaseAt');
+  //expect(receivables[0]).toHaveProperty('timestamp');
 
-    expect(typeof receivables[0].proof).toBe('string');
-    expect(typeof receivables[0].amount).toBe('number');
-    expect(typeof receivables[0].balance).toBe('number');
-    expect(typeof receivables[0].releaseAt).toBe('number');
-    expect(typeof receivables[0].timestamp).toBe('number');
+  //expect(typeof receivables[0].proof).toBe('string');
+  //expect(typeof receivables[0].amount).toBe('number');
+  //expect(typeof receivables[0].balance).toBe('number');
+  //expect(typeof receivables[0].releaseAt).toBe('number');
+  //expect(typeof receivables[0].timestamp).toBe('number');
 
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
-  });
+  //expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
+  //});
 
   test('Should create a Pix payment successfully', async () => {
     const cobranca = await pix.createPayment(

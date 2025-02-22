@@ -1,4 +1,56 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
+
+interface OAuthTokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+interface AccountData {
+  id: string;
+  email: string;
+  username: string;
+  displayName: string;
+  avatar: string | null;
+}
+
+interface PaymentData {
+  redirectUrl: string;
+  reference: string;
+}
+
+interface GetPaymentData {
+  id: string;
+  currency: string;
+  amount: number;
+  proof: string;
+}
+
+interface CurrencyData {
+  symbol: string;
+  minimumAmount: number;
+  decimals: number;
+}
+
+interface WalletBalanceData {
+  currency: string;
+  balance: number;
+  balanceHeld: number;
+  balancePending: number;
+}
+
+interface TransactionData {
+  proof: string;
+  amount: number;
+  balance: number;
+  releaseAt: number;
+  timestamp: number;
+}
+
+interface WebhookData {
+  id: string;
+  url: string;
+}
 
 class LivePix {
   private clientId: string;
@@ -16,7 +68,7 @@ class LivePix {
     this.baseUrl = 'https://api.livepix.gg';
     this.tokenUrl = 'https://oauth.livepix.gg/oauth2/token';
   }
-  //auth
+
   private async getAccessToken(forceRefresh = false): Promise<string> {
     const now = Math.floor(Date.now() / 1000);
 
@@ -32,7 +84,7 @@ class LivePix {
 
     try {
       console.log('Novo token');
-      const response = await axios.post(
+      const response: AxiosResponse<OAuthTokenResponse> = await axios.post(
         this.tokenUrl,
         new URLSearchParams({
           grant_type: 'client_credentials',
@@ -78,20 +130,23 @@ class LivePix {
     }
   }
 
-  //user account
-  async account() {
+  async account(): Promise<AccountData> {
     return this.requestWithAuth(async (token) => {
-      const response = await axios.get(`${this.baseUrl}/v2/account`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response: AxiosResponse<{ data: AccountData }> = await axios.get(
+        `${this.baseUrl}/v2/account`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       return response.data.data;
     });
   }
 
-  //payment
-  async createPayment(amount: number, currency: string, redirectUrl: string) {
+  async createPayment(
+    amount: number,
+    currency: string,
+    redirectUrl: string
+  ): Promise<PaymentData> {
     return this.requestWithAuth(async (token) => {
-      const response = await axios.post(
+      const response: AxiosResponse<{ data: PaymentData }> = await axios.post(
         `${this.baseUrl}/v2/payments`,
         { amount, currency, redirectUrl },
         {
@@ -105,109 +160,84 @@ class LivePix {
     });
   }
 
-  async getPayments() {
+  async getPayments(): Promise<GetPaymentData[]> {
     return this.requestWithAuth(async (token) => {
-      const response = await axios.get(`${this.baseUrl}/v2/payments`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response: AxiosResponse<{ data: GetPaymentData[] }> =
+        await axios.get(`${this.baseUrl}/v2/payments`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
       return response.data.data;
     });
   }
 
-  //messages
-
-  //plans
-
-  //rewards
-
-  //currencies
-  async currencies() {
+  async currencies(): Promise<CurrencyData[]> {
     return this.requestWithAuth(async (token) => {
-      const response = await axios.get(`${this.baseUrl}/v2/currencies`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      console.log('courrencies: ', response.data.data);
-      return response.data.data;
-    });
-  }
-
-  //wallet
-  async getWalletBalance() {
-    return this.requestWithAuth(async (token) => {
-      const response = await axios.get(`${this.baseUrl}/v2/wallet`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      return response.data.data;
-    });
-  }
-
-  async getWalletTransactions(currency: string, page?: number, limit?: number) {
-    const params: any = {};
-
-    if (page) {
-      params.page = page;
-    }
-    if (limit) {
-      params.limit = limit;
-    }
-    return this.requestWithAuth(async (token) => {
-      const response = await axios.get(
-        `${this.baseUrl}/v2/wallet/${currency}/transactions`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: params
-        }
+      const response: AxiosResponse<{ data: CurrencyData[] }> = await axios.get(
+        `${this.baseUrl}/v2/currencies`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data.data;
     });
   }
 
-  async getWalletReceivables(currency: string, page?: number, limit?: number) {
-    const params: any = {};
-
-    if (page) {
-      params.page = page;
-    }
-    if (limit) {
-      params.limit = limit;
-    }
+  async getWalletBalance(): Promise<WalletBalanceData[]> {
     return this.requestWithAuth(async (token) => {
-      const response = await axios.get(
-        `${this.baseUrl}/v2/wallet/${currency}/receivables`,
-        {
+      const response: AxiosResponse<{ data: WalletBalanceData[] }> =
+        await axios.get(`${this.baseUrl}/v2/wallet`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      return response.data.data;
+    });
+  }
+
+  async getWalletTransactions(
+    currency: string,
+    page?: number,
+    limit?: number
+  ): Promise<TransactionData[]> {
+    return this.requestWithAuth(async (token) => {
+      const response: AxiosResponse<{ data: TransactionData[] }> =
+        await axios.get(`${this.baseUrl}/v2/wallet/${currency}/transactions`, {
           headers: { Authorization: `Bearer ${token}` },
-          params: params
-        }
-      );
+          params: { page, limit }
+        });
       return response.data.data;
     });
   }
 
-  //webhook
-  async getWebhooks(page?: number, limit?: number) {
+  async getWalletReceivables(
+    currency: string,
+    page?: number,
+    limit?: number
+  ): Promise<TransactionData[]> {
     return this.requestWithAuth(async (token) => {
-      const params: any = {};
-
-      if (page) {
-        params.page = page;
-      }
-      if (limit) {
-        params.limit = limit;
-      }
-
-      const response = await axios.get(`${this.baseUrl}/v2/webhooks`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: params
-      });
+      const response: AxiosResponse<{ data: TransactionData[] }> =
+        await axios.get(`${this.baseUrl}/v2/wallet/${currency}/receivables`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { page, limit }
+        });
       return response.data.data;
     });
   }
 
-  async createWebhook(url: string) {
+  async getWebhooks(page?: number, limit?: number): Promise<WebhookData[]> {
     return this.requestWithAuth(async (token) => {
-      const response = await axios.post(
+      const response: AxiosResponse<{ data: WebhookData[] }> = await axios.get(
         `${this.baseUrl}/v2/webhooks`,
-        { url: url },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { page, limit }
+        }
+      );
+      return response.data.data;
+    });
+  }
+
+  async createWebhook(url: string): Promise<WebhookData> {
+    return this.requestWithAuth(async (token) => {
+      const response: AxiosResponse<{ data: WebhookData }> = await axios.post(
+        `${this.baseUrl}/v2/webhooks`,
+        { url },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -219,7 +249,7 @@ class LivePix {
     });
   }
 
-  async deleteWebhook(webhookId: string) {
+  async deleteWebhook(webhookId: string): Promise<number> {
     return this.requestWithAuth(async (token) => {
       try {
         const response = await axios.delete(

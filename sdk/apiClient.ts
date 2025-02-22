@@ -10,10 +10,11 @@ class APIClient {
   private tokenExpiresAt: number | null = null;
   private tokenUrl: string = 'https://oauth.livepix.gg/oauth2/token';
 
-  constructor(clientId: string, clientSecret: string, scope: string) {
+  constructor(clientId: string, clientSecret: string) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-    this.scope = scope;
+    this.scope =
+      'payments:read payments:write offline account:read currencies:read rewards:read rewards:write messages:read messages:write payments:read payments:write subscriptions:read subscriptions:write subscription-plans:read subscription-plans:write wallet:read webhooks controls';
   }
 
   private async getAccessToken(forceRefresh = false): Promise<string> {

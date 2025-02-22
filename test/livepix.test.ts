@@ -10,8 +10,7 @@ describe('LivePix SDK - API Real', () => {
   beforeAll(async () => {
     pix = new LivePix(
       process.env.LIVEPIX_CLIENT_ID!,
-      process.env.LIVEPIX_CLIENT_SECRET!,
-      'payments:read payments:write offline account:read currencies:read rewards:read rewards:write messages:read messages:write payments:read payments:write subscriptions:read subscriptions:write subscription-plans:read subscription-plans:write wallet:read webhooks controls'
+      process.env.LIVEPIX_CLIENT_SECRET!
     );
   });
 

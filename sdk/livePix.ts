@@ -12,8 +12,8 @@ class LivePix {
   public webhooks: WebhookAPI;
   public currencies: CurrenciesAPI;
 
-  constructor(clientId: string, clientSecret: string, scope: string) {
-    const apiClient = new APIClient(clientId, clientSecret, scope);
+  constructor(clientId: string, clientSecret: string) {
+    const apiClient = new APIClient(clientId, clientSecret);
     this.account = new AccountAPI(apiClient);
     this.payments = new PaymentAPI(apiClient);
     this.wallet = new WalletAPI(apiClient);

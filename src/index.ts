@@ -131,9 +131,20 @@ class LivePix {
 
   async deleteWebhook(webhookId: string) {
     return this.requestWithAuth(async (token) => {
-      await axios.delete(`${this.baseUrl}/v2/webhooks/${webhookId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      try {
+        const response = await axios.delete(
+          `${this.baseUrl}/v2/webhooks/${webhookId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+        return response.status;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          return error.response.status;
+        }
+        throw error;
+      }
     });
   }
 }

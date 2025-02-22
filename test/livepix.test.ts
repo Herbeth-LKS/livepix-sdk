@@ -95,8 +95,8 @@ describe('LivePix SDK - API Real', () => {
     const webhookId = webhooks[0]?.id;
 
     if (webhookId) {
-      const deleteResponse = await pix.deleteWebhook(webhookId);
-      expect(deleteResponse).toHaveProperty('success', true);
+      const status = await pix.deleteWebhook(webhookId);
+      expect(status).toBe(204);
     } else {
       console.warn('No webhook found to delete, skipping test.');
     }

@@ -51,6 +51,24 @@ describe('LivePix SDK - API Real', () => {
     expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
+  test('Query user currencies', async () => {
+    const currencies = await pix.currencies();
+    console.log(currencies);
+
+    expect(Array.isArray(currencies)).toBe(true);
+    expect(currencies.length).toBeGreaterThan(0);
+
+    expect(currencies[0]).toHaveProperty('symbol');
+    expect(currencies[0]).toHaveProperty('minimumAmount');
+    expect(currencies[0]).toHaveProperty('decimals');
+
+    expect(typeof currencies[0].symbol).toBe('string');
+    expect(typeof currencies[0].minimumAmount).toBe('number');
+    expect(typeof currencies[0].decimals).toBe('number');
+
+    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
+  });
+
   test('Should create a Pix payment successfully', async () => {
     const cobranca = await pix.createPayment(
       100,

@@ -114,6 +114,24 @@ class LivePix {
     });
   }
 
+  //messages
+
+  //plans
+
+  //rewards
+
+  //currencies
+
+  async currencies() {
+    return this.requestWithAuth(async (token) => {
+      const response = await axios.get(`${this.baseUrl}/v2/currencies`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log('courrencies: ', response.data.data);
+      return response.data.data;
+    });
+  }
+
   //webhook
   async getWebhooks(page?: number, limit?: number) {
     return this.requestWithAuth(async (token) => {

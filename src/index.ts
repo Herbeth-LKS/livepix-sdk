@@ -31,7 +31,7 @@ class LivePix {
     }
 
     try {
-      console.log('novo token');
+      console.log('Novo token');
       const response = await axios.post(
         this.tokenUrl,
         new URLSearchParams({
@@ -68,13 +68,11 @@ class LivePix {
       return await requestFn(token);
     } catch (error) {
       const axiosError = error as AxiosError;
-
       if (axiosError.response?.status === 401) {
         console.warn('Access token expired, refreshing token...');
         token = await this.getAccessToken(true);
         return await requestFn(token);
       }
-
       console.error('API request failed:', axiosError);
       throw new Error(`API request failed: ${axiosError.message}`);
     }
@@ -102,6 +100,40 @@ class LivePix {
         headers: { Authorization: `Bearer ${token}` }
       });
       return response.data.data;
+    });
+  }
+
+  async getWebhooks(page: number = 1, limit: number = 10) {
+    return this.requestWithAuth(async (token) => {
+      const response = await axios.get(`${this.baseUrl}/v2/webhooks`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { page, limit }
+      });
+      return response.data.data;
+    });
+  }
+
+  async createWebhook(url: string) {
+    return this.requestWithAuth(async (token) => {
+      const response = await axios.post(
+        `${this.baseUrl}/v2/webhooks`,
+        { url: url },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      return response.data.data;
+    });
+  }
+
+  async deleteWebhook(webhookId: string) {
+    return this.requestWithAuth(async (token) => {
+      await axios.delete(`${this.baseUrl}/v2/webhooks/${webhookId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
     });
   }
 }

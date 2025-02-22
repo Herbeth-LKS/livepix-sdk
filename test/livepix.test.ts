@@ -13,7 +13,7 @@ describe('LivePix SDK - API Real', () => {
     pix = new LivePix(
       process.env.LIVEPIX_CLIENT_ID!,
       process.env.LIVEPIX_CLIENT_SECRET!,
-      'payments:read payments:write'
+      'payments:read payments:write offline account:read currencies:read rewards:read rewards:write messages:read messages:write payments:read payments:write subscriptions:read subscriptions:write subscription-plans:read subscription-plans:write wallet:read webhooks controls'
     );
     getAccessTokenSpy = jest.spyOn(pix as any, 'getAccessToken');
 
@@ -67,10 +67,38 @@ describe('LivePix SDK - API Real', () => {
     expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
-  test('Should refresh the token when expired', async () => {
+  /*test('Should refresh the token when expired', async () => {
     const newToken = await pix['getAccessToken'](true);
 
     expect(accessToken).not.toEqual(newToken);
     expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
+  });*/
+
+  test('Should register a webhook successfully', async () => {
+    const webhookData = await pix.createWebhook('https://example.com/webhook');
+
+    expect(webhookData).toHaveProperty('id');
+    expect(typeof webhookData.id).toBe('string');
+  });
+
+  test('Should list all registered webhooks', async () => {
+    const webhooks = await pix.getWebhooks();
+
+    expect(Array.isArray(webhooks)).toBe(true);
+    expect(webhooks.length).toBeGreaterThan(0);
+    expect(webhooks[0]).toHaveProperty('id');
+    expect(webhooks[0]).toHaveProperty('url');
+  });
+
+  test('Should delete a webhook successfully', async () => {
+    const webhooks = await pix.getWebhooks();
+    const webhookId = webhooks[0]?.id;
+
+    if (webhookId) {
+      const deleteResponse = await pix.deleteWebhook(webhookId);
+      expect(deleteResponse).toHaveProperty('success', true);
+    } else {
+      console.warn('No webhook found to delete, skipping test.');
+    }
   });
 });

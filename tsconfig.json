@@ -4,10 +4,10 @@
     "module": "commonjs", 
     "declaration": true,
     "outDir": "./dist", 
-    "rootDir": "./src",
+    "rootDir": "sdk",
     "esModuleInterop": true,
     "strict": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["sdk/**/*.ts"],
   "exclude": ["node_modules"]
 }

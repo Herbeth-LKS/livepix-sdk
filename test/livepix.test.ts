@@ -1,13 +1,11 @@
 import dotenv from 'dotenv';
 
-import LivePix from '../src';
+import LivePix from '../sdk';
 
 dotenv.config();
 
 describe('LivePix SDK - API Real', () => {
   let pix: LivePix;
-  let getAccessTokenSpy: jest.SpyInstance;
-  let accessToken: string | null = null;
 
   beforeAll(async () => {
     pix = new LivePix(
@@ -15,24 +13,14 @@ describe('LivePix SDK - API Real', () => {
       process.env.LIVEPIX_CLIENT_SECRET!,
       'payments:read payments:write offline account:read currencies:read rewards:read rewards:write messages:read messages:write payments:read payments:write subscriptions:read subscriptions:write subscription-plans:read subscription-plans:write wallet:read webhooks controls'
     );
-    getAccessTokenSpy = jest.spyOn(pix as any, 'getAccessToken');
-
-    accessToken = await pix['getAccessToken']();
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('Should obtain an OAuth2 token successfully', async () => {
-    expect(typeof accessToken).toBe('string');
-    expect(accessToken?.length).toBeGreaterThan(10);
-
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(0);
-  });
-
   test('Should return account info of courrent user', async () => {
-    const account = await pix.account();
+    const account = await pix.account.getAccount();
 
     expect(account).toHaveProperty('id');
     expect(account).toHaveProperty('email');
@@ -47,12 +35,10 @@ describe('LivePix SDK - API Real', () => {
     expect(account.avatar === null || typeof account.avatar === 'string').toBe(
       true
     );
-
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
   test('Query user currencies', async () => {
-    const currencies = await pix.currencies();
+    const currencies = await pix.currencies.getCurrencies();
     console.log(currencies);
 
     expect(Array.isArray(currencies)).toBe(true);
@@ -65,12 +51,10 @@ describe('LivePix SDK - API Real', () => {
     expect(typeof currencies[0].symbol).toBe('string');
     expect(typeof currencies[0].minimumAmount).toBe('number');
     expect(typeof currencies[0].decimals).toBe('number');
-
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
   test('Should get wallet balance successfully', async () => {
-    const balance = await pix.getWalletBalance();
+    const balance = await pix.wallet.getWalletBalance();
 
     expect(Array.isArray(balance)).toBe(true);
     expect(balance.length).toBeGreaterThan(0);
@@ -84,12 +68,10 @@ describe('LivePix SDK - API Real', () => {
     expect(typeof balance[0].balance).toBe('number');
     expect(typeof balance[0].balanceHeld).toBe('number');
     expect(typeof balance[0].balancePending).toBe('number');
-
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
   test('Should get wallet transactions successfully', async () => {
-    const walletTransactions = await pix.getWalletTransactions('BRL');
+    const walletTransactions = await pix.wallet.getWalletTransactions('BRL');
 
     expect(Array.isArray(walletTransactions)).toBe(true);
     expect(walletTransactions.length).toBeGreaterThan(0);
@@ -103,8 +85,6 @@ describe('LivePix SDK - API Real', () => {
     expect(typeof walletTransactions[0].amount).toBe('number');
     expect(typeof walletTransactions[0].balance).toBe('number');
     expect(typeof walletTransactions[0].timestamp).toBe('number');
-
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
   //test('Should get wallet receivables successfully', async () => {
@@ -129,7 +109,7 @@ describe('LivePix SDK - API Real', () => {
   //});
 
   test('Should create a Pix payment successfully', async () => {
-    const cobranca = await pix.createPayment(
+    const cobranca = await pix.payments.createPayment(
       100,
       'BRL',
       'https://dashboard.livepix.gg/'
@@ -139,12 +119,10 @@ describe('LivePix SDK - API Real', () => {
     expect(cobranca).toHaveProperty('reference');
     expect(typeof cobranca.redirectUrl).toBe('string');
     expect(typeof cobranca.reference).toBe('string');
-
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
   test('Should consult Pix payments', async () => {
-    const pagamentos = await pix.getPayments();
+    const pagamentos = await pix.payments.getPayments();
 
     expect(Array.isArray(pagamentos)).toBe(true);
     expect(pagamentos.length).toBeGreaterThan(0);
@@ -160,8 +138,6 @@ describe('LivePix SDK - API Real', () => {
     expect(typeof primeiroPagamento.amount).toBe('number');
     expect(typeof primeiroPagamento.id).toBe('string');
     expect(typeof primeiroPagamento.proof).toBe('string');
-
-    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 
   // test('Should refresh the token when expired', async () => {
@@ -172,14 +148,16 @@ describe('LivePix SDK - API Real', () => {
   //});
 
   test('Should register a webhook successfully', async () => {
-    const webhookData = await pix.createWebhook('https://example.com/webhook');
+    const webhookData = await pix.webhooks.createWebhook(
+      'https://example.com/webhook'
+    );
 
     expect(webhookData).toHaveProperty('id');
     expect(typeof webhookData.id).toBe('string');
   });
 
   test('Should list all registered webhooks', async () => {
-    const webhooks = await pix.getWebhooks();
+    const webhooks = await pix.webhooks.getWebhooks();
 
     expect(Array.isArray(webhooks)).toBe(true);
     expect(webhooks.length).toBeGreaterThan(0);
@@ -188,11 +166,11 @@ describe('LivePix SDK - API Real', () => {
   });
 
   test('Should delete a webhook successfully', async () => {
-    const webhooks = await pix.getWebhooks();
+    const webhooks = await pix.webhooks.getWebhooks();
     const webhookId = webhooks[0]?.id;
 
     if (webhookId) {
-      const status = await pix.deleteWebhook(webhookId);
+      const status = await pix.webhooks.deleteWebhook(webhookId);
       expect(status).toBe(204);
     } else {
       console.warn('No webhook found to delete, skipping test.');

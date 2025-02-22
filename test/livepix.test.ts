@@ -43,7 +43,6 @@ describe('LivePix SDK - API Real', () => {
     expect(typeof cobranca.redirectUrl).toBe('string');
     expect(typeof cobranca.reference).toBe('string');
 
-    // O token já foi obtido antes, então essa chamada não deve ser contada
     expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
   });
 

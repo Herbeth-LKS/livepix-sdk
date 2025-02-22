@@ -47,11 +47,10 @@ describe('LivePix SDK - API Real', () => {
   test('Should consult Pix payments', async () => {
     const pagamentos = await pix.getPayments();
 
-    expect(pagamentos).toHaveProperty('data');
-    expect(Array.isArray(pagamentos.data)).toBe(true);
-    expect(pagamentos.data.length).toBeGreaterThan(0);
+    expect(Array.isArray(pagamentos)).toBe(true);
+    expect(pagamentos.length).toBeGreaterThan(0);
 
-    const primeiroPagamento = pagamentos.data[0];
+    const primeiroPagamento = pagamentos[0];
 
     expect(primeiroPagamento).toHaveProperty('currency');
     expect(primeiroPagamento).toHaveProperty('amount');

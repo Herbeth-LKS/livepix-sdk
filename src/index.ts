@@ -16,7 +16,7 @@ class LivePix {
     this.baseUrl = 'https://api.livepix.gg';
     this.tokenUrl = 'https://oauth.livepix.gg/oauth2/token';
   }
-
+  //auth
   private async getAccessToken(forceRefresh = false): Promise<string> {
     const now = Math.floor(Date.now() / 1000);
 
@@ -78,6 +78,17 @@ class LivePix {
     }
   }
 
+  //user account
+  async account() {
+    return this.requestWithAuth(async (token) => {
+      const response = await axios.get(`${this.baseUrl}/v2/account`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data.data;
+    });
+  }
+
+  //payment
   async createPayment(amount: number, currency: string, redirectUrl: string) {
     return this.requestWithAuth(async (token) => {
       const response = await axios.post(
@@ -103,11 +114,21 @@ class LivePix {
     });
   }
 
-  async getWebhooks(page: number = 1, limit: number = 10) {
+  //webhook
+  async getWebhooks(page?: number, limit?: number) {
     return this.requestWithAuth(async (token) => {
+      const params: any = {};
+
+      if (page) {
+        params.page = page;
+      }
+      if (limit) {
+        params.limit = limit;
+      }
+
       const response = await axios.get(`${this.baseUrl}/v2/webhooks`, {
         headers: { Authorization: `Bearer ${token}` },
-        params: { page, limit }
+        params: params
       });
       return response.data.data;
     });

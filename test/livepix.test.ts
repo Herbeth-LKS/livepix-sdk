@@ -31,6 +31,26 @@ describe('LivePix SDK - API Real', () => {
     expect(getAccessTokenSpy).toHaveBeenCalledTimes(0);
   });
 
+  test('Should return account info of courrent user', async () => {
+    const account = await pix.account();
+
+    expect(account).toHaveProperty('id');
+    expect(account).toHaveProperty('email');
+    expect(account).toHaveProperty('username');
+    expect(account).toHaveProperty('displayName');
+    expect(account).toHaveProperty('avatar');
+
+    expect(typeof account.id).toBe('string');
+    expect(typeof account.email).toBe('string');
+    expect(typeof account.username).toBe('string');
+    expect(typeof account.displayName).toBe('string');
+    expect(account.avatar === null || typeof account.avatar === 'string').toBe(
+      true
+    );
+
+    expect(getAccessTokenSpy).toHaveBeenCalledTimes(1);
+  });
+
   test('Should create a Pix payment successfully', async () => {
     const cobranca = await pix.createPayment(
       100,

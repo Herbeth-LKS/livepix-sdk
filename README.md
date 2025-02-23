@@ -1,168 +1,106 @@
-
 ```markdown
-
 # LivePix SDK
 
-  
+O **LivePix SDK** permite uma integração fácil e eficiente com a API LivePix, oferecendo suporte para TypeScript e Node.js. Com ele, você pode gerenciar contas, pagamentos, transações, saldos e muito mais.
 
-Este SDK permite que você interaja com a API LivePix de forma fácil e eficiente, usando TypeScript. Com ele, você pode acessar informações sobre contas, pagamentos, transações, saldos, e muito mais.
+## 📦 Instalação
 
-  
+### Via npm
 
-## Instalação
-
-  
-
-### Via NPM
-
-  
-
-Para usar este SDK em seu projeto, você pode instalá-lo via NPM:
-
-  
+Instale o SDK usando **npm**:
 
 ```bash
-
-npm  install  livepix-sdk
-
+npm install livepix-sdk
 ```
-
-  
 
 ### Via Yarn
 
-  
-
-Ou via Yarn:
-
-  
+Ou utilizando **Yarn**:
 
 ```bash
-
-yarn  add  livepix-sdk
-
+yarn add livepix-sdk
 ```
 
-  
+---
 
-## Uso
+## 🚀 Como Usar
 
-  
+### Importando o SDK
 
-### Importação do SDK
-
-  
-
-Para começar a usar o SDK, você precisa importar a classe `LivePix` no seu código:
-
-  
+Para começar, importe a classe `LivePix` no seu código:
 
 ```typescript
-
-import  LivePix  from  'livepix-sdk';
-
+import LivePix from 'livepix-sdk';
 ```
 
-  
+### Criando uma Instância do SDK
 
-### Criação de uma Instância do SDK
-
-  
-
-Antes de usar qualquer método, crie uma instância do SDK passando seu `clientId`, `clientSecret` e `scope`:
-
-  
+Antes de utilizar qualquer funcionalidade, crie uma instância do SDK com suas credenciais:
 
 ```typescript
-
-const  clientId  =  'seu-client-id';
-
-const  clientSecret  =  'seu-client-secret';
-
-const  livePix  =  new  LivePix(clientId, clientSecret);
-
+const clientId = 'seu-client-id';
+const clientSecret = 'seu-client-secret';
+const livePix = new LivePix(clientId, clientSecret);
 ```
 
-  
+---
 
-### Obtendo Informações da Conta
+## 🔹 Funcionalidades
 
-  
+### 📌 Obtendo Informações da Conta
 
-Você pode acessar as informações da conta associada ao seu token com o seguinte método:
-
-  
+Para acessar os dados da conta associada ao seu token:
 
 ```typescript
-
-const  accountData  =  await livePix.account.getAccount();
-
+const accountData = await livePix.account.getAccount();
 console.log(accountData);
-
 ```
 
-  
-
-Isso retornará os dados da conta, incluindo o `id`, `email`, `username`, `displayName` e `avatar`.
-
-  
-
-### Criando um Pagamento
-
-  
-
-Para criar um pagamento, forneça:
-
--  `amount: Valor do pagamento em centavos`
-
--  `currency: Moeda do pagamento (BRL, BNB, etc)`
-
--  `redirectUrl: URL para redirecionar o usuário de volta após o pagamento`:
-
-  
-
-```typescript
-
-const  payment  =  await livePix.payments.createPayment(100, 'BRL', 'http://seusite.com/retorno');
-
-console.log(payment);
-
-```
-
-  
-
-Isso retornará os dados do pagamento, incluindo o `redirectUrl` e o `reference`.
-
-```
-
+**Exemplo de resposta:**
+```json
 {
-
-"reference": "61021c7bdabe5e001225b65b",
-
-"redirectUrl": "https://checkout.livepix.gg/61021c7bdabe5e001225b65b"
-
+  "id": "12345",
+  "email": "usuario@email.com",
+  "username": "usuario",
+  "displayName": "Usuário Exemplo",
+  "avatar": "https://example.com/avatar.png"
 }
-
 ```
 
-### Obtendo Pagamentos
+---
 
-  
+### 💰 Criando um Pagamento
 
-Para obter os pagamentos existentes:
+Para gerar um pagamento, informe:
 
-  
+- **amount**: Valor em centavos.
+- **currency**: Moeda (ex: `BRL`).
+- **redirectUrl**: URL de redirecionamento após o pagamento.
 
 ```typescript
+const payment = await livePix.payments.createPayment(100, 'BRL', 'http://seusite.com/retorno');
+console.log(payment);
+```
 
-const  payments  =  await livePix.payments.getPayments();
+**Exemplo de resposta:**
+```json
+{
+  "reference": "61021c7bdabe5e001225b65b",
+  "redirectUrl": "https://checkout.livepix.gg/61021c7bdabe5e001225b65b"
+}
+```
 
+---
+
+### 📊 Obtendo Pagamentos
+
+```typescript
+const payments = await livePix.payments.getPayments();
 console.log(payments);
 ```
 
-Isso retornará um array com todos os pagamentos recebidos:
-
-```
+**Exemplo de resposta:**
+```json
 {
   "id": "61021c7bdabe5e001225b65b",
   "proof": "E0000000020210727170449258921630",
@@ -173,52 +111,36 @@ Isso retornará um array com todos os pagamentos recebidos:
 }
 ```
 
-  
+---
 
-### Obtendo Saldo da Carteira
-
-  
-
-Você pode obter o saldo atual da sua carteira:
-
-  
+### 💵 Consultando Saldo da Carteira
 
 ```typescript
-
-const  walletBalance  =  await livePix.wallet.getWalletBalance;
-
+const walletBalance = await livePix.wallet.getWalletBalance();
 console.log(walletBalance);
 ```
-Isso retornará: 
-```
+
+**Exemplo de resposta:**
+```json
 {
   "currency": "BRL",
-  "balance": 0,
+  "balance": 1000,
   "balanceHeld": 0,
-  "balancePending": 0
+  "balancePending": 200
 }
 ```
 
+---
 
-
-  
-
-### Obtendo Transações de Carteira
-
-  
-
-Para obter as transações de uma moeda específica:
-
-  
+### 🔄 Obtendo Transações da Carteira
 
 ```typescript
-
-const  transactions  = await livePix.wallet.getWalletTransactions('BRL');
-
+const transactions = await livePix.wallet.getWalletTransactions('BRL');
 console.log(transactions);
 ```
-Isso retornará: 
-```
+
+**Exemplo de resposta:**
+```json
 {
   "proof": "E0000000020210727170449258921630",
   "currency": "BRL",
@@ -228,171 +150,69 @@ Isso retornará:
 }
 ```
 
+---
 
-  
+### 🔔 Criando um Webhook
 
-### Criando um Webhook
-
-  
-
-Você pode criar um webhook para receber notificações:
-
-  
+Para receber notificações sobre eventos na API LivePix:
 
 ```typescript
-
-const  webhook  =  await livePix.webhooks.createWebhook('http://seusite.com/webhook');
-
+const webhook = await livePix.webhooks.createWebhook('http://seusite.com/webhook');
 console.log(webhook);
-
 ```
 
-  
+---
 
-### Deletando um Webhook
-
-  
-
-Para deletar um webhook existente, forneça o `webhookId`:
-
-  
+### 🗑️ Deletando um Webhook
 
 ```typescript
-
-const  status  =  await livePix.webhooks.deleteWebhook('id-do-webhook');
-
+const status = await livePix.webhooks.deleteWebhook('id-do-webhook');
 console.log(status);
-
 ```
 
+---
 
-### Vizualizando os Webhook cadastrados
-
-  
-
-Para vizualizar os webhook existente:
-
-  
+### 📜 Listando Webhooks Cadastrados
 
 ```typescript
-
-const  webhooks =  await livePix.webhooks.getWebhooks();
-
+const webhooks = await livePix.webhooks.getWebhooks();
 console.log(webhooks);
-
 ```
 
-Isso retornará: 
-```
+**Exemplo de resposta:**
+```json
 {
   "id": "61021c7bdabe5e001225b65b",
   "url": "https://example.com/webhook"
 }
 ```
 
+---
 
+## 📖 Métodos Disponíveis
 
+| Método | Descrição |
+|--------|-----------|
+| `account.getAccount()` | Retorna informações da conta |
+| `payments.createPayment(amount, currency, redirectUrl)` | Cria um pagamento |
+| `payments.getPayments()` | Retorna todos os pagamentos |
+| `wallet.getWalletBalance()` | Retorna o saldo da carteira |
+| `wallet.getWalletTransactions(currency)` | Obtém transações da carteira |
+| `wallet.getWalletReceivables(currency)` | Obtém contas a receber |
+| `webhooks.getWebhooks()` | Retorna os webhooks cadastrados |
+| `webhooks.createWebhook(url)` | Cria um novo webhook |
+| `webhooks.deleteWebhook(webhookId)` | Deleta um webhook |
 
-  
+---
 
-## Métodos Disponíveis
+## ℹ️ Considerações
 
-  
+- Certifique-se de configurar corretamente o `clientId`, `clientSecret` e `scope` para acessar os endpoints da API.
+- O SDK utiliza **OAuth2** para autenticação e renova automaticamente os tokens expirados.
+- Para mais detalhes, consulte a [documentação oficial da API LivePix](https://docs.livepix.gg/api).
 
-### `account()`
+---
 
-  
+## 📜 Licença
 
-Retorna as informações da conta.
-
-  
-
-### `createPayment(amount: number, currency: string, redirectUrl: string)`
-
-  
-
-Cria um pagamento e retorna os dados do pagamento.
-
-  
-
-### `getPayments()`
-
-  
-
-Retorna todos os pagamentos.
-
-  
-
-### `currencies()`
-
-  
-
-Retorna as moedas disponíveis.
-
-  
-
-### `getWalletBalance()`
-
-  
-
-Retorna o saldo da carteira.
-
-  
-
-### `getWalletTransactions(currency: string, page?: number, limit?: number)`
-
-  
-
-Retorna as transações da carteira para uma moeda específica.
-
-  
-
-### `getWalletReceivables(currency: string, page?: number, limit?: number)`
-
-  
-
-Retorna as contas a receber de uma moeda específica.
-
-  
-
-### `getWebhooks(page?: number, limit?: number)`
-
-  
-
-Retorna os webhooks configurados.
-
-  
-
-### `createWebhook(url: string)`
-
-  
-
-Cria um webhook com a URL fornecida.
-
-  
-
-### `deleteWebhook(webhookId: string)`
-
-  
-
-Deleta o webhook com o ID fornecido.
-
-  
-
-## Considerações
-
-  
-
-- Certifique-se de que o `clientId`, `clientSecret` e `scope` sejam configurados corretamente para acessar os endpoints da API.
-
-- O SDK usa tokens de acesso OAuth2, que são renovados automaticamente quando expiram.
-
-- Se você precisar de mais detalhes sobre os endpoints da API LivePix, consulte a [documentação oficial da API LivePix](https://livepix.gg/docs).
-
-  
-
-## Licença
-
-  
-
-Este SDK está disponível sob a [Licença MIT](LICENSE).
+Este SDK é distribuído sob a [Licença MIT](LICENSE).

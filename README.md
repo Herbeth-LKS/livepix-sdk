@@ -1,4 +1,3 @@
-```markdown
 # LivePix SDK
 
 O **LivePix SDK** permite uma integração fácil e eficiente com a API LivePix, oferecendo suporte para TypeScript e Node.js. Com ele, você pode gerenciar contas, pagamentos, transações, saldos e muito mais.
